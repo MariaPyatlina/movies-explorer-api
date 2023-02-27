@@ -5,7 +5,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
 
-const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/bitfilmsdb' } = process.env;
+const { PORT = 3005, MONGO_URL = 'mongodb://localhost:27017/bitfilmsdb' } = process.env;
 const { allowedCors } = require('./utils/allowedCors');
 const router = require('./routes');
 const { errorLogger, requestLogger } = require('./middlewares/logger');
