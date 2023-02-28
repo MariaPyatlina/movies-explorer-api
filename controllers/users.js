@@ -71,11 +71,17 @@ function updateUserInfo(req, res, next) {
   const userId = req.user._id;
   const { name, email } = req.body;
 
-  User.findByIdAndUpdate(userId, { name, email })
+  User.findByIdAndUpdate(
+    userId,
+    { name, email },
+    {
+      new: true, // обработчик then получит на вход обновлённую запись
+      runValidators: true, // данные будут валидированы перед изменением
+      upsert: false // если пользователь не найден, он будет создан
+    })
     .then((user) => {
       if (!user) { return next(new NotFoundError(errorMessages.USER_NOT_FOUND_ERROR_MSG)); }
-      user.name = name;
-      user.email = email;
+
       return res.status(200).send(user);
     })
     .catch((err) => {
@@ -84,6 +90,7 @@ function updateUserInfo(req, res, next) {
       }
 
       if (err.code === 11000) {
+        console.log('6');
         return next(new ConflictError('Пользователь с таким email уже существует'));
       }
 
