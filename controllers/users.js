@@ -71,16 +71,22 @@ function updateUserInfo(req, res, next) {
   const userId = req.user._id;
   const { name, email } = req.body;
 
-  User.findById(userId, { name, email })
+  User.findByIdAndUpdate(userId, { name, email })
     .then((user) => {
       if (!user) { return next(new NotFoundError(errorMessages.USER_NOT_FOUND_ERROR_MSG)); }
-
+      user.name = name;
+      user.email = email;
       return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError(errorMessages.BAD_REQUEST_ERROR_MSG));
       }
+
+      if (err.code === 11000) {
+        return next(new ConflictError('Пользователь с таким email уже существует'));
+      }
+
       return next(err);
     });
 }
