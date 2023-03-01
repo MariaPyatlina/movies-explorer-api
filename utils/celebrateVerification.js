@@ -4,7 +4,7 @@ const { LINK_REGEX } = require('./regularExpressions');
 const verificationSignIn = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
   }),
 });
 
@@ -12,7 +12,7 @@ const verificationSignUp = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
   }),
 });
 
@@ -33,8 +33,7 @@ const verificationMovieData = celebrate({
     image: Joi.string().required().regex(LINK_REGEX),
     trailerLink: Joi.string().required().regex(LINK_REGEX),
     thumbnail: Joi.string().required().regex(LINK_REGEX),
-    owner: Joi.string().required().hex().length(24),
-    movieId: Joi.string().required(),
+    movieId: Joi.number().required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
   }),

@@ -2,26 +2,29 @@ const Movie = require('../models/movie');
 const BadRequestError = require('../error/badRequestError');
 const NotFoundError = require('../error/notFoundError');
 const ForbiddenError = require('../error/forbiddenError');
-const { errorMessages } = require('../utils/constants');
+const { messages } = require('../utils/constants');
 
 function createMovie(req, res, next) {
-  // const {
-  //   country,
-  //   director,
-  //   duration,
-  //   year,
-  //   description,
-  //   image,
-  //   trailerLink,
-  //   thumbnail,
-  //   owner,
-  //   movieId,
-  //   nameRU,
-  //   nameEN,
-  // } = req.body;
-  const movieObject = req.body;
+  const {
+    country, director, duration, year, description, image,
+    trailerLink, thumbnail, movieId, nameRU, nameEN,
+  } = req.body;
+  const userId = req.user._id; // из payload
 
-  Movie.create(movieObject)
+  Movie.create({
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailerLink,
+    thumbnail,
+    movieId,
+    nameRU,
+    nameEN,
+    owner: userId,
+  })
     .then((movie) => {
       movie.populate('owner')
         .then((movieWithOwner) => {
@@ -30,7 +33,7 @@ function createMovie(req, res, next) {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError(`${errorMessages.BAD_REQUEST_ERROR_MSG} Проверьте правильность запроса.`));
+        return next(new BadRequestError(messages.BAD_REQUEST_ERROR_MSG));
       }
       return next(err);
     });
@@ -50,22 +53,21 @@ function deleteMovie(req, res, next) {
     .populate('owner')
     .then((movie) => {
       if (!movie) {
-        return next(new NotFoundError(errorMessages.MOVIE_NOT_FOUND_ERROR_MSG));
+        throw new NotFoundError(messages.MOVIE_NOT_FOUND_ERROR_MSG);
       }
+
       if (movie.owner.id !== req.user._id) {
-        return next(new ForbiddenError(`${errorMessages.FORBIDDEN_ERROR_MSG}. Нельзя удалить чужой фильм`));
+        throw new ForbiddenError(messages.FORBIDDEN_MOVIE_DELETE);
       }
-      return movie;
-    })
-    .then((movie) => {
-      movie.remove();
+
+      return movie.remove();
     })
     .then(() => {
-      res.status(200).send({ message: `Фильм ${req.params.movieId} удален из Избранного` });
+      res.status(200).send(messages.MOVIE_DELETED);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequestError(errorMessages.BAD_REQUEST_ERROR_MSG));
+        return next(new BadRequestError(messages.BAD_REQUEST_ERROR_MSG));
       }
       return next(err);
     });

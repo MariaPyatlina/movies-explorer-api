@@ -6,8 +6,8 @@ const BadRequestError = require('../error/badRequestError');
 const ConflictError = require('../error/conflictError');
 const NotFoundError = require('../error/notFoundError');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
-const { errorMessages, secrets } = require('../utils/constants');
+const { messages } = require('../utils/constants');
+const { appConfig } = require('../utils/appConfig');
 
 function createUser(req, res, next) {
   const { name, email, password } = req.body;
@@ -25,11 +25,11 @@ function createUser(req, res, next) {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError(`${errorMessages.BAD_REQUEST_ERROR_MSG} Проверьте правильность запроса.`));
+        return next(new BadRequestError(messages.BAD_REQUEST_ERROR_MSG));
       }
 
       if (err.code === 11000) {
-        return next(new ConflictError('Неуникальный email'));
+        return next(new ConflictError(messages.NOT_UNIC_USER));
       }
       return next(err);
     });
@@ -42,7 +42,7 @@ function login(req, res, next) {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : secrets.SECRET_PHRASE,
+        appConfig.JWT_SECRET,
         { expiresIn: '7d' },
       );
 
@@ -55,13 +55,13 @@ function getUserInfo(req, res, next) {
   const userId = req.user._id; // берем из payload при авторизации
   User.findById(userId)
     .then((user) => {
-      if (!user) { return next(new NotFoundError(errorMessages.USER_NOT_FOUND_ERROR_MSG)); }
+      if (!user) { throw new NotFoundError(messages.USER_NOT_FOUND_ERROR_MSG); }
 
       return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequestError(errorMessages.BAD_REQUEST_ERROR_MSG));
+        return next(new BadRequestError(messages.BAD_REQUEST_ERROR_MSG));
       }
       return next(err);
     });
@@ -77,21 +77,21 @@ function updateUserInfo(req, res, next) {
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
-      upsert: false // если пользователь не найден, он будет создан
-    })
+      upsert: false, // если пользователь не найден, он будет создан
+    },
+  )
     .then((user) => {
-      if (!user) { return next(new NotFoundError(errorMessages.USER_NOT_FOUND_ERROR_MSG)); }
+      if (!user) { throw new NotFoundError(messages.USER_NOT_FOUND_ERROR_MSG); }
 
       return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError(errorMessages.BAD_REQUEST_ERROR_MSG));
+        return next(new BadRequestError(messages.BAD_REQUEST_ERROR_MSG));
       }
 
       if (err.code === 11000) {
-        console.log('6');
-        return next(new ConflictError('Пользователь с таким email уже существует'));
+        return next(new ConflictError(messages.NOT_UNIC_USER));
       }
 
       return next(err);

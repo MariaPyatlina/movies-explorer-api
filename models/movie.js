@@ -1,86 +1,76 @@
 const mongoose = require('mongoose');
 
 const { LINK_REGEX } = require('../utils/regularExpressions');
+const { messages } = require('../utils/constants');
 
 const movieSchema = new mongoose.Schema({
-  country: {
+  country: { // страна создания фильма. Обязательное поле-строка.
     type: String,
     require: true,
-    default: '-',
-  }, // страна создания фильма. Обязательное поле-строка.
-  director: {
+  },
+  director: { // — режиссёр фильма. Обязательное поле-строка.
     type: String,
     require: true,
-    default: '-',
-  }, // — режиссёр фильма. Обязательное поле-строка.
-  duration: {
+  },
+  duration: { // — длительность фильма. Обязательное поле-число.
     type: Number,
     require: true,
-    default: '-',
-  }, // — длительность фильма. Обязательное поле-число.
-  year: {
+  },
+  year: { // — год выпуска фильма. Обязательное поле-строка.
     type: String,
     require: true,
-    default: '-',
-  }, // — год выпуска фильма. Обязательное поле-строка.
-  description: {
+  },
+  description: { // — описание фильма. Обязательное поле-строка.
     type: String,
     require: true,
-    default: '-',
-  }, // — описание фильма. Обязательное поле-строка.
-  image: {
+  },
+  image: { // — ссылка на постер к фильму. Обязательное поле-строка. Запишите её URL-адресом.
     type: String,
     require: true,
-    default: 'https://cdn3.iconfinder.com/data/icons/font-awesome-regular-1/512/file-video-512.png',
     validate: {
       validator(v) {
         return LINK_REGEX.test(v);
       },
-      message: (props) => `${props.value} неправильный формат ссылки`,
+      message: (props) => `${props.value} ${messages.WRONG_LINK_FORMAT}`,
     },
-  }, // — ссылка на постер к фильму. Обязательное поле-строка. Запишите её URL-адресом.
-  trailerLink: {
+  },
+  trailerLink: { // — ссылка на трейлер фильма.Обязательное поле- строка.Запишите её URL - адресом.
     type: String,
     require: true,
-    default: 'https://cdn3.iconfinder.com/data/icons/font-awesome-regular-1/512/file-video-512.png',
     validate: {
       validator(v) {
         return LINK_REGEX.test(v);
       },
-      message: (props) => `${props.value} неправильный формат ссылки`,
+      message: (props) => `${props.value} ${messages.WRONG_LINK_FORMAT}`,
     },
-  }, // — ссылка на трейлер фильма.Обязательное поле- строка.Запишите её URL - адресом.
-  thumbnail: {
+  },
+  thumbnail: { // — миниатюрное изобр постера к фильму.Обязат поле - строка. URL - адресом.
     type: String,
     require: true,
-    default: 'https://cdn3.iconfinder.com/data/icons/font-awesome-regular-1/512/file-video-512.png',
     validate: {
       validator(v) {
         return LINK_REGEX.test(v);
       },
-      message: (props) => `${props.value} неправильный формат ссылки`,
+      message: (props) => `${props.value} ${messages.WRONG_LINK_FORMAT}`,
     },
-  }, // — миниатюрное изобр постера к фильму.Обязательное поле - строка.Запишите её URL - адресом.
-  owner: {
+  },
+  owner: { // — _id пользователя, который сохранил фильм.Обязательное поле.
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
     required: true,
-  }, // — _id пользователя, который сохранил фильм.Обязательное поле.
-  movieId: { // TODO понять какие данные придут
+  },
+  movieId: { // — id фильма, кот-й содерж в ответе сервиса MoviesExplorer.Обязательное поле. Число
     type: Number,
     required: true,
-    default: '-',
-  }, // — id фильма, который содержится в ответе сервиса MoviesExplorer.Обязательное поле.
-  nameRU: {
+  },
+  nameRU: { // — название фильма на русском языке. Обязательное поле-строка.
     type: String,
     require: true,
-    default: '-',
-  }, // — название фильма на русском языке. Обязательное поле-строка.
-  nameEN: {
+  },
+  nameEN: { // — название фильма на английском языке. Обязательное поле-строка.
     type: String,
     require: true,
-    default: '-',
-  }, // — название фильма на английском языке. Обязательное поле-строка.
+  },
 }, {
   versionKey: false,
 });

@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('../error/unauthorizedError');
-const { errorMessages, secrets } = require('../utils/constants');
+const { messages } = require('../utils/constants');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { appConfig } = require('../utils/appConfig');
 
 // eslint-disable-next-line consistent-return
 const auth = (req, res, next) => {
@@ -10,7 +10,7 @@ const auth = (req, res, next) => {
   // проверим есть ли токен в заголовке
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return next(new UnauthorizedError(errorMessages.UNAUTHORIZED_ERROR_MSG));
+    return next(new UnauthorizedError(messages.UNAUTHORIZED_ERROR_MSG));
   }
 
   // извлечем его, если есть
@@ -20,10 +20,10 @@ const auth = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : secrets.SECRET_PHRASE);
+    payload = jwt.verify(token, appConfig.JWT_SECRET);
   } catch (err) {
     // отправим ошибку, если не получилось
-    return next(new UnauthorizedError(errorMessages.UNAUTHORIZED_ERROR_MSG));
+    return next(new UnauthorizedError(messages.UNAUTHORIZED_ERROR_MSG));
   }
 
   // записываем пейлоуд в объект запроса
