@@ -63,7 +63,7 @@ function deleteMovie(req, res, next) {
       return movie.remove();
     })
     .then(() => {
-      res.status(200).send(messages.MOVIE_DELETED);
+      res.status(200).send({ message: messages.MOVIE_DELETED });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
