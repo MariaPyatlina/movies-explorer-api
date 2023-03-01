@@ -40,7 +40,7 @@ function createMovie(req, res, next) {
 }
 
 function getSavedMovies(req, res, next) {
-  Movie.find({}) // Найти всех
+  Movie.find({ owner: req.user._id }) // Найти всех
     .populate('owner')
     .then((movie) => {
       res.send({ data: movie });

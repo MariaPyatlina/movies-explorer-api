@@ -46,7 +46,7 @@ function login(req, res, next) {
         { expiresIn: '7d' },
       );
 
-      res.status(200).send({ messsage: 'success', token });
+      res.status(200).send({ message: messages.SUCCESS_LOGIN, token });
     })
     .catch(next);
 }

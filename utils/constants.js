@@ -12,11 +12,8 @@ const messages = {
   WRONG_EMAIL_FORMAT: 'Неправильный формат почты',
   WRONG_LOGIN_PASSWORD_DATA: 'Неправильная пара логин-пароль',
   MOVIE_DELETED: 'Фильм удален из Избранного',
+  SUCCESS_LOGIN: 'Пользователь залогинен успешно',
 };
-
-// const secrets = {
-//   SECRET_PHRASE: 'Some_secret_phrase',
-// };
 
 module.exports = {
   messages,

@@ -4,7 +4,6 @@ const { messages } = require('../utils/constants');
 
 const { appConfig } = require('../utils/appConfig');
 
-// eslint-disable-next-line consistent-return
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
   // проверим есть ли токен в заголовке
@@ -30,7 +29,7 @@ const auth = (req, res, next) => {
   req.user = payload;
 
   // пропускаем запрос дальше
-  next();
+  return next();
 };
 
 module.exports = {
